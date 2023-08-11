@@ -112,7 +112,7 @@ action:
             entity_id: !input light
           data:
             brightness_step_pct: 10
-            transition: '{{ (var_speed / 1000)|float }}'
+            transition: 1
         - delay: 0.5
   - conditions:
     - condition: template
@@ -126,7 +126,7 @@ action:
             entity_id: !input light
           data:
             brightness_step_pct: -10
-            transition: '{{ (var_speed / 1000)|float }}'
+            transition: 1
         - delay: 0.5
   - conditions:
     - '{{ command == ''press'' }}'
