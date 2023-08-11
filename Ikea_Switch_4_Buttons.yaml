@@ -18,6 +18,17 @@ blueprint:
         target:
           entity:
             domain: light
+    speed:
+      name: Speed
+      description: The speed in which to update the light when the button is held.
+      selector:
+        number:
+          min: 100.0
+          max: 1000.0
+          step: 100.0
+          unit_of_measurement: milliseconds
+          mode: slider
+      default: 500
     force_brightness:
       name: Force turn on brightness
       description: Force the brightness to the set level below, when the "on" button
@@ -65,6 +76,8 @@ blueprint:
 mode: restart
 max_exceeded: silent
 variables:
+  var_light: !input light
+  var_speed: !input speed
   force_brightness: !input 'force_brightness'
 trigger:
 - platform: event
@@ -112,8 +125,9 @@ action:
             entity_id: !input light
           data:
             brightness_step_pct: 10
-            transition: 1
-        - delay: 0.5
+            transition: '{{ (var_speed / 1000)|float }}'
+        - delay:
+            milliseconds: !input speed
   - conditions:
     - condition: template
       value_template: '{{ trigger.event.data.command == "move" }}'
@@ -126,8 +140,9 @@ action:
             entity_id: !input light
           data:
             brightness_step_pct: -10
-            transition: 1
-        - delay: 0.5
+            transition: '{{ (var_speed / 1000)|float }}'
+        - delay:
+            milliseconds: !input speed
   - conditions:
     - '{{ command == ''press'' }}'
     - '{{ cluster_id == 5 }}'
