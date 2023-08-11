@@ -74,171 +74,171 @@ action:
       cluster_id: "{{ trigger.event.data.cluster_id }}"
       endpoint_id: "{{ trigger.event.data.endpoint_id }}"
       args: "{{ trigger.event.data.args }}"
-- choose:
-  - conditions:
-    - condition: template
-      value_template: '{{ trigger.event.data.command == "on" }}'
-    sequence:
-    - service: light.turn_on
-      target: !input light
-      data:
-        brightness: 100
-        color_temp: 450
-  - conditions:
-    - condition: template
-      value_template: '{{ trigger.event.data.command == "off" }}'
-    sequence:
-    - service: light.turn_off
-      target: !input light
-  - conditions:
-    - condition: template
-      value_template: '{{ trigger.event.data.command == "move_to_level_with_on_off"
-        }}'
-    sequence:
-    - service: light.turn_on
-      target: !input light
-      data:
-        brightness: 254
-        hs_color:
-        - 38.222
-        - 52.941
-  - conditions:
-    - condition: template
-      value_template: '{{ trigger.event.data.command == "step_with_on_off" }}'
-    sequence:
-    - service: light.turn_on
-      target: !input light
-      data:
-        brightness_step_pct: 20
-        transition: '{{ (var_speed / 1000)|float }}'
-  - conditions:
-    - condition: template
-      value_template: '{{ trigger.event.data.command == "move_with_on_off" }}'
-    sequence:
-    - repeat:
-        while: []
-        sequence:
-        - service: light.turn_on
-          target: !input light
-          data:
-            brightness_step_pct: 10
-            transition: '{{ (var_speed / 1000)|float }}'
-        - delay:
-            milliseconds: !input speed
-  - conditions:
-    - condition: template
-      value_template: '{{ trigger.event.data.command == "step" }}'
-    sequence:
-    - service: light.turn_on
-      target: !input light
-      data:
-        brightness_step_pct: -20
-        transition: '{{ (var_speed / 1000)|float }}'
-  - conditions:
-    - condition: template
-      value_template: '{{ trigger.event.data.command == "move" }}'
-    sequence:
-    - repeat:
-        while: []
-        sequence:
-        - service: light.turn_on
-          target: !input light
-          data:
-            brightness_step_pct: -10
-            transition: '{{ (var_speed / 1000)|float }}'
-        - delay:
-            milliseconds: !input speed
-  - conditions:
-    - condition: template
-      value_template: '{{ trigger.event.data.command == "press" }}'
-    - condition: template
-      value_template: '{{ trigger.event.data.args == [256,13,0] }}'
-    sequence:
-    - service: light.turn_on
-      target: !input light
-      data:
-        hs_color:
-        - "{% if state_attr(var_light, \"hs_color\")[0] + 18 > 360 %}\n  {{ state_attr(var_light,
-          \"hs_color\")[0] + 18 - 360 }}\n{% else %}\n  {{ state_attr(var_light, \"hs_color\")[0]
-          + 18 }}\n{% endif %}"
-        - '{{ state_attr(var_light, "hs_color")[1] }}'
-        transition: '{{ (var_speed / 1000)|float }}'
-  - conditions:
-    - condition: template
-      value_template: '{{ trigger.event.data.command == "hold" }}'
-    - condition: template
-      value_template: '{{ trigger.event.data.args == [3328,0] }}'
-    sequence:
-    - repeat:
-        while: []
-        sequence:
-        - service: light.turn_on
-          target: !input light
-          data:
-            hs_color:
-            - "{% if state_attr(var_light, \"hs_color\")[0] + 18 > 360 %}\n  {{ state_attr(var_light,
-              \"hs_color\")[0] + 18 - 360 }}\n{% else %}\n  {{ state_attr(var_light,
-              \"hs_color\")[0] + 18 }}\n{% endif %}"
-            - '{{ state_attr(var_light, "hs_color")[1] }}'
-            transition: '{{ (var_speed / 1000)|float }}'
-        - delay:
-            milliseconds: !input speed
-  - conditions:
-    - condition: template
-      value_template: '{{ trigger.event.data.command == "press" }}'
-    - condition: template
-      value_template: '{{ trigger.event.data.args == [257,13,0] }}'
-    sequence:
-    - service: light.turn_on
-      target: !input light
-      data:
-        hs_color:
-        - '{{ state_attr(var_light, "hs_color")[0] }}'
-        - "{% if state_attr(var_light, \"hs_color\")[1] + 33 < 100 %}\n  {{ state_attr(var_light,
-          \"hs_color\")[1] + 33 }}\n{% else %}\n  0\n{% endif %}"
-        transition: '{{ (var_speed / 1000)|float }}'
-  - conditions:
-    - condition: template
-      value_template: '{{ trigger.event.data.command == "hold" }}'
-    - condition: template
-      value_template: '{{ trigger.event.data.args == [3329,0] }}'
-    sequence:
-    - repeat:
-        while: []
-        sequence:
-        - service: light.turn_on
-          target: !input light
-          data:
-            hs_color:
-            - '{{ state_attr(var_light, "hs_color")[0] }}'
-            - "{% if state_attr(var_light, \"hs_color\")[1] - 10 < 0 %}\n  {{ state_attr(var_light,
-              \"hs_color\")[1] - 10 + 100 }}\n{% else %}\n  {{ state_attr(var_light,
-              \"hs_color\")[1] - 10 }}\n{% endif %}"
-            transition: '{{ (var_speed / 1000)|float }}'
-        - delay:
-            milliseconds: !input speed
-  - conditions:
-    - '{{ command == ''press'' }}'
-    - '{{ cluster_id == 5 }}'
-    - '{{ endpoint_id == 1 }}'
-    - '{{ args == [257, 13, 0] }}'
-    sequence: !input button_left_short
-  - conditions:
-    - '{{ command == ''hold'' }}'
-    - '{{ cluster_id == 5 }}'
-    - '{{ endpoint_id == 1 }}'
-    - '{{ args == [3329, 0] }}'
-    sequence: !input button_left_long
-  - conditions:
-    - '{{ command == ''press'' }}'
-    - '{{ cluster_id == 5 }}'
-    - '{{ endpoint_id == 1 }}'
-    - '{{ args == [256, 13, 0] }}'
-    sequence: !input button_right_short
-  - conditions:
-    - '{{ command == ''hold'' }}'
-    - '{{ cluster_id == 5 }}'
-    - '{{ endpoint_id == 1 }}'
-    - '{{ args == [3328, 0] }}'
-    sequence: !input button_right_long
-  default: []
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == "on" }}'
+      sequence:
+      - service: light.turn_on
+        target: !input light
+        data:
+          brightness: 100
+          color_temp: 450
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == "off" }}'
+      sequence:
+      - service: light.turn_off
+        target: !input light
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == "move_to_level_with_on_off"
+          }}'
+      sequence:
+      - service: light.turn_on
+        target: !input light
+        data:
+          brightness: 254
+          hs_color:
+          - 38.222
+          - 52.941
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == "step_with_on_off" }}'
+      sequence:
+      - service: light.turn_on
+        target: !input light
+        data:
+          brightness_step_pct: 20
+          transition: '{{ (var_speed / 1000)|float }}'
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == "move_with_on_off" }}'
+      sequence:
+      - repeat:
+          while: []
+          sequence:
+          - service: light.turn_on
+            target: !input light
+            data:
+              brightness_step_pct: 10
+              transition: '{{ (var_speed / 1000)|float }}'
+          - delay:
+              milliseconds: !input speed
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == "step" }}'
+      sequence:
+      - service: light.turn_on
+        target: !input light
+        data:
+          brightness_step_pct: -20
+          transition: '{{ (var_speed / 1000)|float }}'
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == "move" }}'
+      sequence:
+      - repeat:
+          while: []
+          sequence:
+          - service: light.turn_on
+            target: !input light
+            data:
+              brightness_step_pct: -10
+              transition: '{{ (var_speed / 1000)|float }}'
+          - delay:
+              milliseconds: !input speed
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == "press" }}'
+      - condition: template
+        value_template: '{{ trigger.event.data.args == [256,13,0] }}'
+      sequence:
+      - service: light.turn_on
+        target: !input light
+        data:
+          hs_color:
+          - "{% if state_attr(var_light, \"hs_color\")[0] + 18 > 360 %}\n  {{ state_attr(var_light,
+            \"hs_color\")[0] + 18 - 360 }}\n{% else %}\n  {{ state_attr(var_light, \"hs_color\")[0]
+            + 18 }}\n{% endif %}"
+          - '{{ state_attr(var_light, "hs_color")[1] }}'
+          transition: '{{ (var_speed / 1000)|float }}'
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == "hold" }}'
+      - condition: template
+        value_template: '{{ trigger.event.data.args == [3328,0] }}'
+      sequence:
+      - repeat:
+          while: []
+          sequence:
+          - service: light.turn_on
+            target: !input light
+            data:
+              hs_color:
+              - "{% if state_attr(var_light, \"hs_color\")[0] + 18 > 360 %}\n  {{ state_attr(var_light,
+                \"hs_color\")[0] + 18 - 360 }}\n{% else %}\n  {{ state_attr(var_light,
+                \"hs_color\")[0] + 18 }}\n{% endif %}"
+              - '{{ state_attr(var_light, "hs_color")[1] }}'
+              transition: '{{ (var_speed / 1000)|float }}'
+          - delay:
+              milliseconds: !input speed
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == "press" }}'
+      - condition: template
+        value_template: '{{ trigger.event.data.args == [257,13,0] }}'
+      sequence:
+      - service: light.turn_on
+        target: !input light
+        data:
+          hs_color:
+          - '{{ state_attr(var_light, "hs_color")[0] }}'
+          - "{% if state_attr(var_light, \"hs_color\")[1] + 33 < 100 %}\n  {{ state_attr(var_light,
+            \"hs_color\")[1] + 33 }}\n{% else %}\n  0\n{% endif %}"
+          transition: '{{ (var_speed / 1000)|float }}'
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.command == "hold" }}'
+      - condition: template
+        value_template: '{{ trigger.event.data.args == [3329,0] }}'
+      sequence:
+      - repeat:
+          while: []
+          sequence:
+          - service: light.turn_on
+            target: !input light
+            data:
+              hs_color:
+              - '{{ state_attr(var_light, "hs_color")[0] }}'
+              - "{% if state_attr(var_light, \"hs_color\")[1] - 10 < 0 %}\n  {{ state_attr(var_light,
+                \"hs_color\")[1] - 10 + 100 }}\n{% else %}\n  {{ state_attr(var_light,
+                \"hs_color\")[1] - 10 }}\n{% endif %}"
+              transition: '{{ (var_speed / 1000)|float }}'
+          - delay:
+              milliseconds: !input speed
+    - conditions:
+      - '{{ command == ''press'' }}'
+      - '{{ cluster_id == 5 }}'
+      - '{{ endpoint_id == 1 }}'
+      - '{{ args == [257, 13, 0] }}'
+      sequence: !input button_left_short
+    - conditions:
+      - '{{ command == ''hold'' }}'
+      - '{{ cluster_id == 5 }}'
+      - '{{ endpoint_id == 1 }}'
+      - '{{ args == [3329, 0] }}'
+      sequence: !input button_left_long
+    - conditions:
+      - '{{ command == ''press'' }}'
+      - '{{ cluster_id == 5 }}'
+      - '{{ endpoint_id == 1 }}'
+      - '{{ args == [256, 13, 0] }}'
+      sequence: !input button_right_short
+    - conditions:
+      - '{{ command == ''hold'' }}'
+      - '{{ cluster_id == 5 }}'
+      - '{{ endpoint_id == 1 }}'
+      - '{{ args == [3328, 0] }}'
+      sequence: !input button_right_long
+    default: []
