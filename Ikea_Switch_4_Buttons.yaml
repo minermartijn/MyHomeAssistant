@@ -101,34 +101,32 @@ action:
     - service: light.turn_off
       target: !input 'light'
   - conditions:
-    - '{{ command == ''move_with_on_off'' }}'
-    - '{{ cluster_id == 8 }}'
-    - '{{ endpoint_id == 1 }}'
-    - '{{ args == [0, 83] }}'
+    - condition: template
+      value_template: '{{ trigger.event.data.command == "move_with_on_off" }}'
     sequence:
     - repeat:
-        count: 10
+        while: []
         sequence:
         - service: light.turn_on
-          target: !input 'light'
+          target:
+            entity_id: !input light
           data:
             brightness_step_pct: 10
-            transition: 1
+            transition: '{{ (var_speed / 1000)|float }}'
         - delay: 0.5
   - conditions:
-    - '{{ command == ''move'' }}'
-    - '{{ cluster_id == 8 }}'
-    - '{{ endpoint_id == 1 }}'
-    - '{{ args == [1, 83] }}'
+    - condition: template
+      value_template: '{{ trigger.event.data.command == "move" }}'
     sequence:
     - repeat:
-        count: 10
+        while: []
         sequence:
         - service: light.turn_on
-          target: !input 'light'
+          target:
+            entity_id: !input light
           data:
             brightness_step_pct: -10
-            transition: 1
+            transition: '{{ (var_speed / 1000)|float }}'
         - delay: 0.5
   - conditions:
     - '{{ command == ''press'' }}'
