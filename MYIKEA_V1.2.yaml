@@ -26,12 +26,12 @@ blueprint:
       description: The speed in which to update the light when the button is held.
       selector:
         number:
-          min: 100.0
-          max: 1000.0
+          min: 500.0
+          max: 2000.0
           step: 100.0
           unit_of_measurement: milliseconds
           mode: slider
-      default: 500
+      default: 1000
     button_left_short:
       name: Left button - short press
       description: Action to run on short left button press
