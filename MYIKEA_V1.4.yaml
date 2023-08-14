@@ -1,5 +1,5 @@
 blueprint:
-  name: MYIKEA_v1.3
+  name: MYIKEA_v1.4
   description: This automation simulates the use of the IKEA TRADFRI remote control
     connected through ZHA.
   domain: automation
@@ -26,12 +26,12 @@ blueprint:
       description: The speed in which to update the light when the button is held.
       selector:
         number:
-          min: 500.0
-          max: 2000.0
+          min: 100.0
+          max: 1000.0
           step: 100.0
           unit_of_measurement: milliseconds
           mode: slider
-      default: 1000
+      default: 200
     button_left_short:
       name: Left button - short press
       description: Action to run on short left button press
@@ -51,6 +51,11 @@ blueprint:
       default: []
       selector:
         action: {}
+    service_to_run:
+      name: Service to run
+      description: Select the service you want to run with Short Right Button
+      selector:
+        domain: {}
     button_right_long:
       name: Right button - long press
       description: Action to run on long right button press. Use with care, as before
@@ -230,11 +235,13 @@ action:
       - '{{ args == [3329, 0] }}'
       sequence: !input button_left_long
     - conditions:
-      - '{{ command == ''press'' }}'
-      - '{{ cluster_id == 5 }}'
-      - '{{ endpoint_id == 1 }}'
-      - '{{ args == [256, 13, 0] }}'
-      sequence: !input button_right_short
+        - '{{ command == ''press'' }}'
+        - '{{ cluster_id == 5 }}'
+        - '{{ endpoint_id == 1 }}'
+        - '{{ args == [256, 13, 0] }}'
+      - service: !input service_to_run
+        target:
+          entity_id: !input button_right_short
     - conditions:
       - '{{ command == ''hold'' }}'
       - '{{ cluster_id == 5 }}'
