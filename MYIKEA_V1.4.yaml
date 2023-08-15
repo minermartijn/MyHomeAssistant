@@ -240,8 +240,8 @@ action:
         - '{{ endpoint_id == 1 }}'
         - '{{ args == [256, 13, 0] }}'
       sequence:
-      - service: !input service_to_run
-      - target: !input button_right_short
+        service: !input service_to_run
+        target: !input button_right_short
     - conditions:
       - '{{ command == ''hold'' }}'
       - '{{ cluster_id == 5 }}'
