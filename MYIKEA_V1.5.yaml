@@ -1,5 +1,5 @@
 blueprint:
-  name: MYIKEA_v1.4
+  name: MYIKEA_v1.5
   description: This automation simulates the use of the IKEA TRADFRI remote control
     connected through ZHA.
   domain: automation
