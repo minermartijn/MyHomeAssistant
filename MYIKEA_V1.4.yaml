@@ -55,7 +55,7 @@ blueprint:
       name: Service to run
       description: Select the service you want to run with Short Right Button
       selector:
-        domain: {}
+        action: {}
     button_right_long:
       name: Right button - long press
       description: Action to run on long right button press. Use with care, as before
