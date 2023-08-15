@@ -239,9 +239,9 @@ action:
         - '{{ cluster_id == 5 }}'
         - '{{ endpoint_id == 1 }}'
         - '{{ args == [256, 13, 0] }}'
+      sequence:
       - service: !input service_to_run
-        target:
-          entity_id: !input button_right_short
+        target: !input button_right_short
     - conditions:
       - '{{ command == ''hold'' }}'
       - '{{ cluster_id == 5 }}'
