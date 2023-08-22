@@ -1,5 +1,5 @@
 blueprint:
-  name: MYIKEA_v1.14
+  name: MYIKEA_v1.15
   description: This automation simulates the use of the IKEA TRADFRI remote control
     connected through ZHA.
   domain: automation
@@ -121,15 +121,19 @@ action:
         - delay:
             milliseconds: !input speed
   - conditions:
-    - condition: template
-      value_template: '{{ trigger.event.data.command == "step" }}'
+      - condition: template
+        value_template: '{{ trigger.event.data.command == "step" }}'
     sequence:
-    - service: light.turn_on
-      target: !input light
-      data_template:
-        brightness_pct: >
-          {{ (state_attr(trigger.event.data.entity_id, 'current_value') | int - 5) | max(1) }}
-        transition: '{{ (var_speed / 1000)|float }}'
+      - repeat:
+          count: "{{ state_attr(!input light, 'entity_id') | count }}"
+          sequence:
+            - service: light.turn_on
+              target:
+                entity_id: "{{ state_attr(!input light, 'entity_id')[repeat.index - 1] }}"
+              data_template:
+                brightness_pct: >-
+                  {{ (state_attr(state_attr(!input light, 'entity_id')[repeat.index - 1], 'current_value') | int - 5) | max(1) }}
+                transition: '{{ (var_speed / 1000) | float }}'
   - conditions:
     - condition: template
       value_template: '{{ trigger.event.data.command == "move" }}'
