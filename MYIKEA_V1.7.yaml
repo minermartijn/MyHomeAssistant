@@ -1,5 +1,5 @@
 blueprint:
-  name: MYIKEA_v1.6
+  name: MYIKEA_v1.7
   description: This automation simulates the use of the IKEA TRADFRI remote control
     connected through ZHA.
   domain: automation
@@ -109,7 +109,7 @@ action:
       - service: light.turn_on
         target: !input light
         data:
-          brightness_step_pct: 10
+          brightness_step_pct: 5
           transition: '{{ (var_speed / 1000)|float }}'
     - conditions:
       - condition: template
@@ -121,7 +121,7 @@ action:
           - service: light.turn_on
             target: !input light
             data:
-              brightness_step_pct: 10
+              brightness_step_pct: 5
               transition: '{{ (var_speed / 1000)|float }}'
           - delay:
               milliseconds: !input speed
@@ -132,7 +132,7 @@ action:
       - service: light.turn_on
         target: !input light
         data:
-          brightness_step_pct: -10
+          brightness_step_pct: -5
           transition: '{{ (var_speed / 1000)|float }}'
     - conditions:
       - condition: template
@@ -144,7 +144,7 @@ action:
           - service: light.turn_on
             target: !input light
             data:
-              brightness_step_pct: -10
+              brightness_step_pct: -5
               transition: '{{ (var_speed / 1000)|float }}'
           - delay:
               milliseconds: !input speed
